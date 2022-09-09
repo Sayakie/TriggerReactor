@@ -152,7 +152,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: ${{ matrix.file_name }}
-          path: build/libs/TriggerReactor-${{ matrix.file_name }}-*.jar
+          path: build/libs/TriggerReactor-${{ matrix.file_name }}.jar
           retention-days: 7
 
     #   upload_artifact:
