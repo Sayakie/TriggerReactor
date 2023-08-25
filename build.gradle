@@ -12,7 +12,12 @@ subprojects {
     apply plugin: 'java'
     apply plugin: 'java-library'
 
+    def javaVerStr = providers.gradleProperty("java_version").getOrElse("17")
+    def javaVer = JavaVersion.toVersion(javaVerStr)
+
     ext {
+        javaVer
+
         id = 'TriggerReactor'
         description = 'Simple script parser with infinite possibility'
         author = 'wysohn'
@@ -78,9 +83,8 @@ subprojects {
         testImplementation 'org.javassist:javassist:3.20.0-GA'
     }
 
-    java{
-        sourceCompatibility = JavaVersion.VERSION_16
-        targetCompatibility = JavaVersion.VERSION_16
+    java {
+        sourceCompatibility = targetCompatibility = javaVer
     }
 
     archivesBaseName = parent.archivesBaseName + "-" + archivesBaseName
@@ -88,8 +92,6 @@ subprojects {
     // TASKS
 
     test {
-        def javaVerStr = providers.gradleProperty("java_version").getOrElse("17")
-        def javaVer = JavaVersion.toVersion(javaVerStr)
         sourceCompatibility = targetCompatibility = javaVer
 
         reports.html.enabled = false

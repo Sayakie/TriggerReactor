@@ -27,9 +27,6 @@ jobs:
       matrix:
         os: [windows-latest, ubuntu-latest, macos-latest]
         java: [17]
-        subproject-path:
-          - 'bukkit/latest'
-          - 'bukkit/legacy'
 
     steps:
       - uses: actions/checkout@v3
@@ -52,7 +49,7 @@ jobs:
       - name: Report
         uses: mikepenz/action-junit-report@v3
         with:
-          report_paths: '**/${{ matrix.subproject-path }}/build/test-results/test/TEST-*.xml'
+          report_paths: '**/build/test-results/test/TEST-*.xml'
 
   test_java:
     runs-on: ${{ matrix.os }}
@@ -65,16 +62,6 @@ jobs:
       matrix:
         os: [ubuntu-latest] # Should we test on [windows-latest, ubuntu-latest, macos-latest] especially?
         java: [8, 17]
-        subproject-path:
-          - 'bukkit/latest'
-          - 'bukkit/legacy'
-        exclude:
-          - os: ubuntu-latest
-            java: 8
-            subproject-path: 'bukkit/latest'
-          - os: ubuntu-latest
-            java: 17
-            subproject-path: 'bukkit/legacy'
 
     steps:
       - uses: actions/checkout@v3
@@ -95,7 +82,7 @@ jobs:
       - name: Report
         uses: mikepenz/action-junit-report@v3
         with:
-          report_paths: '**/${{ matrix.subproject-path }}/build/test-results/test/TEST-*.xml'
+          report_paths: '**/build/test-results/test/TEST-*.xml'
 
   build:
     needs: [test_graalvm, test_java]
