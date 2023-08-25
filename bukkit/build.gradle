@@ -1,8 +1,9 @@
 dependencies {
-    if(!project.hasProperty("Legacy")){
+    if (project.ext.javaVer.isCompatibleWith(JavaVersion.VERSION_16)) {
         api fileTree(dir: "libs", includes: ['jshader.jar'])
     }
 
+    //noinspection VulnerableLibrariesLocal
     implementation 'org.spigotmc:spigot-api:1.12.2-R0.1-SNAPSHOT'
 }
 
