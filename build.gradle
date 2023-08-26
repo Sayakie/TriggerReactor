@@ -5,9 +5,12 @@ plugins {
 }
 
 repositories {
-    jcenter()
     mavenCentral()
 }
+
+def javaVersionFromCli = providers.gradleProperty("java_version")
+        .map { JavaVersion.toVersion(it) }
+        .getOrElse(JavaVersion.VERSION_16)
 
 subprojects {
     apply plugin: 'java'
@@ -55,13 +58,10 @@ subprojects {
     }
 
     repositories {
-        jcenter()
         mavenCentral()
     }
 
     dependencies {
-        // https://mvnrepository.com/artifact/mysql/mysql-connector-java
-        api group: 'mysql', name: 'mysql-connector-java', version: '5.1.13'
         // https://mvnrepository.com/artifact/mysql/mysql-connector-java
         api group: 'mysql', name: 'mysql-connector-java', version: '5.1.13'
         // https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
@@ -80,9 +80,8 @@ subprojects {
         testImplementation 'org.javassist:javassist:3.20.0-GA'
     }
 
-    java{
-        sourceCompatibility = JavaVersion.VERSION_16
-        targetCompatibility = JavaVersion.VERSION_16
+    java {
+        sourceCompatibility = targetCompatibility = javaVersionFromCli
     }
 
     archivesBaseName = parent.archivesBaseName + "-" + archivesBaseName
@@ -96,7 +95,7 @@ subprojects {
             exceptionFormat "full"
         }
 
-        if(!project.hasProperty("Legacy")){
+        if (javaVersionFromCli.java11Compatible) {
             jvmArgs = [
                     '--add-opens', 'java.base/java.lang.reflect=ALL-UNNAMED'
             ]
@@ -127,14 +126,6 @@ subprojects {
         exclude "**/copy/com/google/**"
         exclude "org/apache/**"
     }
-}
-
-allprojects {
-    task testLegacy{
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-    }
-    testLegacy.finalizedBy test
 }
 
 def exportedProjects= [
