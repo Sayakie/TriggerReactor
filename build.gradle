@@ -12,12 +12,7 @@ subprojects {
     apply plugin: 'java'
     apply plugin: 'java-library'
 
-    def javaVerStr = providers.gradleProperty("java_version").getOrElse("17")
-    def javaVer = JavaVersion.toVersion(javaVerStr)
-
     ext {
-        javaVer
-
         id = 'TriggerReactor'
         description = 'Simple script parser with infinite possibility'
         author = 'wysohn'
@@ -59,6 +54,7 @@ subprojects {
     }
 
     repositories {
+        jcenter()
         mavenCentral()
     }
 
@@ -84,7 +80,15 @@ subprojects {
     }
 
     java {
-        sourceCompatibility = targetCompatibility = javaVer
+        def javaVersionFromCli = providers.gradleProperty("java_version")
+                .map { JavaVersion.toVersion(it) }
+                .getOrElse(JavaVersion.VERSION_16)
+
+        sourceCompatibility = targetCompatibility = javaVersionFromCli
+
+        if (javaVersionFromCli.java11Compatible) {
+            toolchain.languageVersion.set(JavaLanguageVersion.of(javaVersionFromCli.ordinal() + 1))
+        }
     }
 
     archivesBaseName = parent.archivesBaseName + "-" + archivesBaseName
@@ -92,15 +96,13 @@ subprojects {
     // TASKS
 
     test {
-        sourceCompatibility = targetCompatibility = javaVer
-
         reports.html.enabled = false
         testLogging {
             events "failed"
             exceptionFormat "full"
         }
 
-        if (javaVer.isCompatibleWith(JavaVersion.VERSION_16)) {
+        if (java.toolchain.languageVersion.getOrElse(JavaLanguageVersion.of(17)).asInt() >= 16) {
             jvmArgs = [
                     '--add-opens', 'java.base/java.lang.reflect=ALL-UNNAMED'
             ]
@@ -132,6 +134,7 @@ subprojects {
         exclude "org/apache/**"
     }
 }
+
 def exportedProjects= [
         ":core",
         /*":sponge",*/

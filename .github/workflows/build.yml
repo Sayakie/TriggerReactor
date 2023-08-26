@@ -18,16 +18,14 @@ on:
 jobs:
   test_graalvm:
     runs-on: ${{ matrix.os }}
-    if: ${{ github.event_name != 'pull_request' }} || ${{ github.event.pull_request.action != 'labeled' }}
     permissions:
       checks: write
 
     strategy:
       fail-fast: true
       matrix:
-        os: [windows-latest, ubuntu-latest, macos-latest]
+        os: [windows-latest, ubuntu-latest]
         java: [17]
-
     steps:
       - uses: actions/checkout@v3
       - name: GraalVM ${{ matrix.java }}
@@ -140,6 +138,21 @@ jobs:
 
             core.notice("This will not build a jar");
             return result;
+
+      - name: Test on ${{ matrix.os }}
+        if: ${{ matrix.java }} != '8' # Temporal workaround (inline) - see below task
+        run: ./gradlew test
+
+      # Temporal workaround start
+      - name: Test on ${{ matrix.os }}
+        if: ${{ matrix.java }} == '8'
+        run: ./gradlew testLegacy -P Legacy
+      # Temporal workaround end
+
+      - name: Report
+        uses: mikepenz/action-junit-report@v3
+        with:
+          report_paths: '**/${{ matrix.subproject-path }}build/test-results/test/TEST-*.xml'
 
       - name: Build Jars
         if: fromJSON(steps.determine.outputs.result).action == 'build'
