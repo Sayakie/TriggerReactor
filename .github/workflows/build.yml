@@ -76,7 +76,7 @@ jobs:
         uses: gradle/gradle-build-action@v2
 
       - name: Test on ${{ matrix.os }}
-        run: ./gradlew test -P version=${{ matrix.java }} --stacktrace
+        run: ./gradlew test -P java_version=${{ matrix.java }} --stacktrace
 
       - name: Report
         uses: mikepenz/action-junit-report@v3
