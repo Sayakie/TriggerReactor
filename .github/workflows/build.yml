@@ -34,7 +34,9 @@ jobs:
         with:
           java-version: ${{ matrix.java }}
           distribution: 'graalvm'
-          components: 'native-image'
+          components: 'js'
+          cache: 'gradle'
+          check-for-updates: false
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Validate Gradle wrapper
@@ -59,7 +61,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        os: [ubuntu-latest] # Should we test on [windows-latest, ubuntu-latest, macos-latest] especially?
+        os: [ubuntu-latest]
         java: [8, 17]
 
     steps:
@@ -69,6 +71,7 @@ jobs:
         with:
           java-version: ${{ matrix.java }}
           distribution: 'adopt' # See 'Supported distributions' for available options
+          cache: 'gradle'
 
       - name: Validate Gradle wrapper
         uses: gradle/wrapper-validation-action@v1
@@ -76,7 +79,7 @@ jobs:
         uses: gradle/gradle-build-action@v2
 
       - name: Test on ${{ matrix.os }}
-        run: ./gradlew test -P version=${{ matrix.java }} --stacktrace
+        run: ./gradlew test -P java_version=${{ matrix.java }} --stacktrace
 
       - name: Report
         uses: mikepenz/action-junit-report@v3
@@ -103,6 +106,7 @@ jobs:
       with:
         java-version: ${{ matrix.java }}
         distribution: 'adopt' # See 'Supported distributions' for available options
+        cache: 'gradle'
 
     - name: Configure Build
       uses: actions/github-script@v6
@@ -154,4 +158,5 @@ jobs:
         path: |
           build/libs/TriggerReactor-*-pr-*.jar
           !build/libs/TriggerReactor-core-*.jar
+          !build/libs/TriggerReactor-bukkit-pr-*.jar
         retention-days: 7

@@ -10,7 +10,7 @@ repositories {
 
 def javaVersionFromCli = providers.gradleProperty("java_version")
         .map { JavaVersion.toVersion(it) }
-        .getOrElse(JavaVersion.VERSION_16)
+        .getOrElse(JavaVersion.VERSION_17)
 
 subprojects {
     apply plugin: 'java'
