@@ -45,7 +45,7 @@ jobs:
         uses: gradle/gradle-build-action@v2.7.1
 
       - name: Test on ${{ matrix.os }}
-        run: ./gradlew -Dpolyglot.js.nashorn-compat=true test -P java_version=${{ matrix.java }} --stacktrace
+        run: ./gradlew test -D polyglot.js.nashorn-compat=true -P java_version=${{ matrix.java }} --stacktrace
 
       - name: Report
         uses: mikepenz/action-junit-report@v3
