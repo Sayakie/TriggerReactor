@@ -78,6 +78,9 @@ subprojects {
 //        testImplementation 'org.powermock:powermock-module-junit4:2.+'
 //        testImplementation 'org.powermock:powermock-api-mockito2:2.+'
         testImplementation 'org.javassist:javassist:3.20.0-GA'
+        if (javaVersionFromCli.java11Compatible) {
+            testImplementation("org.openjdk.nashorn:nashorn-core:15.4")
+        }
     }
 
     java {
