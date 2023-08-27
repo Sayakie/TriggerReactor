@@ -131,6 +131,14 @@ subprojects {
     }
 }
 
+allprojects {
+    task testLegacy{
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+    testLegacy.finalizedBy test
+}
+
 def exportedProjects= [
         ":core",
         /*":sponge",*/
