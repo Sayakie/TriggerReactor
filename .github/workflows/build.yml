@@ -45,7 +45,7 @@ jobs:
         uses: gradle/gradle-build-action@v2.7.1
 
       - name: Test on ${{ matrix.os }}
-        run: ./gradlew test -P java_version=${{ matrix.java }} --stacktrace
+        run: ./gradlew -Dpolyglot.js.nashorn-compat=true test -P java_version=${{ matrix.java }} --stacktrace
 
       - name: Report
         uses: mikepenz/action-junit-report@v3
@@ -151,12 +151,12 @@ jobs:
         run: ./gradlew build -x test -P java_version=${{ matrix.java }} -P version=pr-${{ fromJSON(steps.determine.outputs.result).pr }} --stacktrace
 
       - name: Upload Jars
-        if: fromJSON(steps.determine.outputs.result).action == 'build'
+        if: fromJSON(steps.determine.outputs.result).action == 'build' && success()
         uses: actions/upload-artifact@v3
         with:
           name: TriggerReactor-${{ fromJSON(steps.determine.outputs.result).pr }}
           path: |
-            build/libs/TriggerReactor-*-pr-*.jar
+            build/libs/*
             !build/libs/TriggerReactor-core-*.jar
             !build/libs/TriggerReactor-bukkit-pr-*.jar
           retention-days: 7
