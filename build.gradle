@@ -8,6 +8,10 @@ repositories {
     mavenCentral()
 }
 
+def javaVersionFromCli = providers.gradleProperty("java_version")
+        .map { JavaVersion.toVersion(it) }
+        .getOrElse(JavaVersion.VERSION_16)
+
 subprojects {
     apply plugin: 'java'
     apply plugin: 'java-library'
@@ -54,13 +58,10 @@ subprojects {
     }
 
     repositories {
-        jcenter()
         mavenCentral()
     }
 
     dependencies {
-        // https://mvnrepository.com/artifact/mysql/mysql-connector-java
-        api group: 'mysql', name: 'mysql-connector-java', version: '5.1.13'
         // https://mvnrepository.com/artifact/mysql/mysql-connector-java
         api group: 'mysql', name: 'mysql-connector-java', version: '5.1.13'
         // https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
@@ -80,15 +81,7 @@ subprojects {
     }
 
     java {
-        def javaVersionFromCli = providers.gradleProperty("java_version")
-                .map { JavaVersion.toVersion(it) }
-                .getOrElse(JavaVersion.VERSION_16)
-
         sourceCompatibility = targetCompatibility = javaVersionFromCli
-
-        if (javaVersionFromCli.java11Compatible) {
-            toolchain.languageVersion.set(JavaLanguageVersion.of(javaVersionFromCli.ordinal() + 1))
-        }
     }
 
     archivesBaseName = parent.archivesBaseName + "-" + archivesBaseName
@@ -102,7 +95,7 @@ subprojects {
             exceptionFormat "full"
         }
 
-        if (java.toolchain.languageVersion.getOrElse(JavaLanguageVersion.of(17)).asInt() >= 16) {
+        if (javaVersionFromCli.java11Compatible) {
             jvmArgs = [
                     '--add-opens', 'java.base/java.lang.reflect=ALL-UNNAMED'
             ]
